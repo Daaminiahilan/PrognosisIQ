@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PrognosisIQ Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f4f8;
+            color: #333;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #006d77;
+        }
+        label {
+            margin-right: 10px;
+        }
+        select, input {
+            margin-bottom: 10px;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 6px 12px;
+            margin-top: 5px;
+            border: none;
+            border-radius: 4px;
+            background-color: #00b4d8;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0096c7;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #0096c7;
+            color: white;
+        }
+        .section {
+            margin-bottom: 30px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+        .input-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .input-row label {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>PrognosisIQ Dashboard</h1>
+
+    <!-- CSV Selection -->
+    <div class="section">
+        <h2>1️⃣ Select CSV Data</h2>
+        <label for="organSelect">Select Organ:</label>
+        <select id="organSelect">
+            <option value="">--Select Organ--</option>
+        </select>
+        <br>
+        <div class="input-row">
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate">
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDate">
+            <button id="fetchDataBtn">Get CSV Data</button>
+        </div>
+        <div id="csvOutput">CSV data will appear here...</div>
+    </div>
+
+    <!-- Prediction -->
+    <div class="section">
+        <h2>2️⃣ ML/DL Prediction</h2>
+        <div class="input-row">
+            <label for="ageInput">Age:</label>
+            <input type="number" id="ageInput" placeholder="45">
+            <label for="bpInput">BP:</label>
+            <input type="number" id="bpInput" placeholder="120">
+            <label for="cholesterolInput">Cholesterol:</label>
+            <input type="number" id="cholesterolInput" placeholder="180">
+            <label for="diabetesInput">Diabetes:</label>
+            <input type="number" id="diabetesInput" placeholder="0">
+            <label for="patientIdInput">Patient ID:</label>
+            <input type="number" id="patientIdInput" placeholder="123">
+        </div>
+        <button id="predictBtn">Get Prediction</button>
+        <pre id="predictionOutput">Prediction will appear here...</pre>
+    </div>
+
+    <script>
+        const backendUrl = "http://127.0.0.1:5000";
+
+        // Load CSV files into dropdown
+        fetch(`${backendUrl}/api/csvs`)
+            .then(res => res.json())
+            .then(files => {
+                const select = document.getElementById("organSelect");
+                files.forEach(f => {
+                    const option = document.createElement("option");
+                    option.value = f;
+                    option.textContent = f;
+                    select.appendChild(option);
+                });
+            })
+            .catch(err => console.error("Error loading CSVs:", err));
+
+        // Display CSV as table
+        function displayTable(data) {
+            if (!data || data.length === 0) {
+                document.getElementById("csvOutput").innerHTML = "No data found.";
+                return;
+            }
+            const keys = Object.keys(data[0]);
+            let table = "<table><tr>" + keys.map(k => `<th>${k}</th>`).join('') + "</tr>";
+            data.forEach(row => {
+                table += "<tr>" + keys.map(k => `<td>${row[k]}</td>`).join('') + "</tr>";
+            });
+            table += "</table>";
+            document.getElementById("csvOutput").innerHTML = table;
+        }
+
+        // Fetch filtered CSV data
+        document.getElementById("fetchDataBtn").addEventListener("click", () => {
+            const organ = document.getElementById("organSelect").value;
+            const start = document.getElementById("startDate").value;
+            const end = document.getElementById("endDate").value;
+
+            if (!organ) {
+                alert("Please select an organ.");
+                return;
+            }
+            if (start && end && new Date(start) > new Date(end)) {
+                alert("Start date cannot be after end date.");
+                return;
+            }
+
+            document.getElementById("csvOutput").innerHTML = "Loading CSV data...";
+            fetch(`${backendUrl}/api/data?organ=${organ}&startDate=${start}&endDate=${end}`)
+                .then(res => res.json())
+                .then(data => displayTable(data))
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById("csvOutput").innerHTML = "Error fetching CSV data.";
+                });
+        });
+
+        // Fetch ML/DL prediction
+        document.getElementById("predictBtn").addEventListener("click", () => {
+            const organ = document.getElementById("organSelect").value;
+            if (!organ) {
+                alert("Please select an organ.");
+                return;
+            }
+
+            const inputData = {
+                organ,
+                age: parseInt(document.getElementById("ageInput").value) || 45,
+                bp: parseInt(document.getElementById("bpInput").value) || 120,
+                cholesterol: parseInt(document.getElementById("cholesterolInput").value) || 180,
+                diabetes: parseInt(document.getElementById("diabetesInput").value) || 0,
+                patient_id: parseInt(document.getElementById("patientIdInput").value) || 123
+            };
+
+            document.getElementById("predictionOutput").textContent = "Loading prediction...";
+            fetch(`${backendUrl}/predict`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(inputData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("predictionOutput").textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById("predictionOutput").textContent = "Error fetching prediction.";
+            });
+        });
+    </script>
+</body>
+</html>

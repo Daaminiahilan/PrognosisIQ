@@ -1,0 +1,124 @@
+/* Dashboard Container */
+.dashboard-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #e0f2f1;
+  color: #004d40;
+}
+
+/* Dashboard Title */
+.dashboard-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Time Filter Dropdown */
+.filter-section {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.filter-section label {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.filter-section select {
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid #004d40;
+  background-color: #ffffff;
+  color: #004d40;
+}
+
+/* Summary Cards */
+.summary-cards {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.card {
+  padding: 20px;
+  border-radius: 12px;
+  width: 180px;
+  text-align: center;
+  margin: 10px;
+  color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Risk-based card colors */
+.card.total-patients {
+  background-color: #26a69a; /* Teal */
+}
+.card.low-risk {
+  background-color: #4caf50; /* Green */
+}
+.card.medium-risk {
+  background-color: #ff9800; /* Orange */
+}
+.card.high-risk {
+  background-color: #f44336; /* Red */
+}
+
+/* Charts Section */
+.charts-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.chart {
+  background-color: #b2dfdb;
+  padding: 20px;
+  border-radius: 12px;
+  width: 400px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.chart h3 {
+  text-align: center;
+  margin-bottom: 10px;
+  color: #004d40;
+}
+
+/* Forecast Chart Styling */
+.chart:last-child {
+  background-color: #80cbc4; /* slightly darker teal for forecast */
+}
+
+/* Recent Activity Table */
+.recent-table table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+}
+
+.recent-table th,
+.recent-table td {
+  padding: 12px;
+  border: 1px solid #004d40;
+  text-align: center;
+}
+
+.recent-table th {
+  background-color: #26a69a;
+  color: #ffffff;
+}
+
+/* Table row colors based on risk */
+.high-risk-row {
+  background-color: #ffebee; /* light red */
+}
+
+.medium-risk-row {
+  background-color: #fff3e0; /* light orange */
+}
+
+.low-risk-row {
+  background-color: #e8f5e9; /* light green */
+}
