@@ -1,0 +1,6 @@
+patient_id,age,bp,cholesterol,diabetes,progression_score
+LU001,50,135,210,0,0.4
+LU002,60,145,230,1,0.8
+LU003,40,120,180,0,0.2
+LU004,65,150,240,1,0.9
+LU005,55,140,220,1,0.75

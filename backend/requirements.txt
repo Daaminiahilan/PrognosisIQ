@@ -1,0 +1,9 @@
+flask
+flask-cors
+pymongo
+pandas
+numpy
+scikit-learn
+torch
+faiss-cpu
+transformers
